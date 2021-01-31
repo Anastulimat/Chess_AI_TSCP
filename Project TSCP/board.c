@@ -13,12 +13,12 @@
 #include "protos.h"
 
 
-int checkBoard() 
+int checkBoard()
 {
 
 	// EXIT_SUCCESS = 0; EXIT_FAILURE = 1
 	//printf("Starting checkboard function...\n");
-	for (int i = 0; i < 64; i++) 
+	for (int i = 0; i < 64; i++)
 	{
 		if (piece[i] == EMPTY && board[i] != -1)
 			return EXIT_FAILURE;
@@ -33,14 +33,14 @@ int checkBoard()
 			return EXIT_FAILURE;
 	}
 
-	for (int i = 0; i < 32; i++) 
+	for (int i = 0; i < 32; i++)
 	{
 		if (pospiece[i] != PIECE_DEAD && board[pospiece[i]] != i)
 			return EXIT_FAILURE;
 	}
 
 
-	for (int i = 0; i < hply; i++) 
+	for (int i = 0; i < hply; i++)
 	{
 		if (hist_dat[i].capture_board != -1 && pospiece[hist_dat[i].capture_board] != PIECE_DEAD)
 			return EXIT_FAILURE;
@@ -159,7 +159,7 @@ int hash_rand()
    for the current chess position. Of course, there are many more chess
    positions than there are 32 bit numbers, so the numbers generated are
    not really unique, but they're unique enough for our purposes (to detect
-   repetitions of the position). 
+   repetitions of the position).
    The way it works is to XOR random numbers that correspond to features of
    the position, e.g., if there's a black knight on B8, hash is XORed with
    hash_piece[BLACK][KNIGHT][B8]. All of the pieces are XORed together,
@@ -171,7 +171,7 @@ void set_hash()
 {
 	int i;
 
-	hash = 0;	
+	hash = 0;
 	for (i = 0; i < 64; ++i)
 		if (color[i] != EMPTY)
 			hash ^= hash_piece[color[i]][piece[i]][i];
@@ -203,7 +203,7 @@ BOOL in_check(int s)
 		if (piece[i] == KING && color[i] == s)
 			return attack(i, s ^ 1);
 	return TRUE; * / /* shouldn't get here */
-	
+
 }
 
 
@@ -231,7 +231,7 @@ BOOL attack(int sq, int s)
 		i = pospiece[index]; // position de la piece
 
 		if (i == PIECE_DEAD) continue;
-		
+
 		if (color[i] == s) {
 			if (piece[i] == PAWN) {
 				if (s == LIGHT) {
@@ -261,9 +261,9 @@ BOOL attack(int sq, int s)
 							break;
 					}
 		}
-	
+
 	}
-		
+
 	return FALSE;
 }
 
@@ -316,7 +316,7 @@ void gen()
 						n = mailbox[mailbox64[n] + offset[piece[i]][j]];
 						if (n == -1)
 							break;
-						if (color[n] != EMPTY) { // Déstination non vide donc capture
+						if (color[n] != EMPTY) { // Destination non vide donc capture
 							if (color[n] == xside)
 								gen_push(i, n, 1); // Générer le coup de capture
 							break;
@@ -340,7 +340,7 @@ void gen()
 		if (castle & 8)
 			gen_push(E8, C8, 2);
 	}
-	
+
 	/* generate en passant moves */
 	if (ep != -1) {
 		if (side == LIGHT) {
@@ -370,7 +370,7 @@ void gen_caps()
 	first_move[ply + 1] = first_move[ply];
 	for (i = 0; i < 64; ++i)
 		if (color[i] == side) {
-			if (piece[i]==PAWN) {
+			if (piece[i] == PAWN) {
 				if (side == LIGHT) {
 					if (COL(i) != 0 && color[i - 9] == DARK)
 						gen_push(i, i - 9, 17);
@@ -432,7 +432,7 @@ void gen_caps()
 void gen_push(int from, int to, int bits)
 {
 	gen_t *g;
-	
+
 	if (bits & 16) {
 		if (side == LIGHT) {
 			if (to <= H8) {
@@ -466,7 +466,7 @@ void gen_promote(int from, int to, int bits)
 {
 	int i;
 	gen_t *g;
-	
+
 	for (i = KNIGHT; i <= QUEEN; ++i) {
 		g = &gen_dat[first_move[ply + 1]++];
 		g->m.b.from = (char)from;
@@ -484,7 +484,7 @@ void gen_promote(int from, int to, int bits)
 
 BOOL makemove(move_bytes m)
 {
-	
+
 	/* test to see if a castle move is legal and move the rook
 	   (the king is moved with the usual move code later) */
 	if (m.bits & 2) {
@@ -493,38 +493,38 @@ BOOL makemove(move_bytes m)
 		if (in_check(side))
 			return FALSE;
 		switch (m.to) {
-			case 62:
-				if (color[F1] != EMPTY || color[G1] != EMPTY ||
-						attack(F1, xside) || attack(G1, xside))
-					return FALSE;
-				from = H1;
-				to = F1;
-				break;
-			case 58:
-				if (color[B1] != EMPTY || color[C1] != EMPTY || color[D1] != EMPTY ||
-						attack(C1, xside) || attack(D1, xside))
-					return FALSE;
-				from = A1;
-				to = D1;
-				break;
-			case 6:
-				if (color[F8] != EMPTY || color[G8] != EMPTY ||
-						attack(F8, xside) || attack(G8, xside))
-					return FALSE;
-				from = H8;
-				to = F8;
-				break;
-			case 2:
-				if (color[B8] != EMPTY || color[C8] != EMPTY || color[D8] != EMPTY ||
-						attack(C8, xside) || attack(D8, xside))
-					return FALSE;
-				from = A8;
-				to = D8;
-				break;
-			default:  /* shouldn't get here */
-				from = -1;
-				to = -1;
-				break;
+		case 62:
+			if (color[F1] != EMPTY || color[G1] != EMPTY ||
+				attack(F1, xside) || attack(G1, xside))
+				return FALSE;
+			from = H1;
+			to = F1;
+			break;
+		case 58:
+			if (color[B1] != EMPTY || color[C1] != EMPTY || color[D1] != EMPTY ||
+				attack(C1, xside) || attack(D1, xside))
+				return FALSE;
+			from = A1;
+			to = D1;
+			break;
+		case 6:
+			if (color[F8] != EMPTY || color[G8] != EMPTY ||
+				attack(F8, xside) || attack(G8, xside))
+				return FALSE;
+			from = H8;
+			to = F8;
+			break;
+		case 2:
+			if (color[B8] != EMPTY || color[C8] != EMPTY || color[D8] != EMPTY ||
+				attack(C8, xside) || attack(D8, xside))
+				return FALSE;
+			from = A8;
+			to = D8;
+			break;
+		default:  /* shouldn't get here */
+			from = -1;
+			to = -1;
+			break;
 		}
 		color[to] = color[from];
 		piece[to] = piece[from];
@@ -572,7 +572,7 @@ BOOL makemove(move_bytes m)
 		piece[(int)m.to] = piece[(int)m.from];
 
 		//Prise capture
-		if(board[(int)m.to] != 0) //Différent de vide
+		if (board[(int)m.to] != 0) //Différent de vide
 			pospiece[board[(int)m.to]] = PIECE_DEAD;
 	}
 	color[(int)m.from] = EMPTY;
@@ -641,80 +641,70 @@ void takeback()
 		piece[(int)m.to] = EMPTY;
 
 		/*Pas de capture*/
-		/*
 		board[(int)m.from] = board[(int)m.to];
-		board[(int)m.to] = 0;
 		pospiece[board[(int)m.from]] = (int)m.from;
-		*/
-
+		board[(int)m.to] = 0;
 	}
 	else {  // Capture
 		color[(int)m.to] = xside;
 		piece[(int)m.to] = hist_dat[hply].capture;
 
 		/* Capture */
-		/*
 		board[(int)m.from] = board[(int)m.to];
-		board[(int)m.to] = hist_dat[hply].capture;
 		pospiece[board[(int)m.from]] = (int)m.from;
-		*/
+		board[(int)m.to] = hist_dat[hply].capture_board;
+		
 	}
 
 	if (m.bits & 2) {
 		int from, to;
 
-		switch(m.to) {
-			case 62:
-				from = F1;
-				to = H1;
-				break;
-			case 58:
-				from = D1;
-				to = A1;
-				break;
-			case 6:
-				from = F8;
-				to = H8;
-				break;
-			case 2:
-				from = D8;
-				to = A8;
-				break;
-			default:  /* shouldn't get here */
-				from = -1;
-				to = -1;
-				break;
+		switch (m.to) {
+		case 62:
+			from = F1;
+			to = H1;
+			break;
+		case 58:
+			from = D1;
+			to = A1;
+			break;
+		case 6:
+			from = F8;
+			to = H8;
+			break;
+		case 2:
+			from = D8;
+			to = A8;
+			break;
+		default:  /* shouldn't get here */
+			from = -1;
+			to = -1;
+			break;
 		}
 		color[to] = side;
 		piece[to] = ROOK;
 		color[from] = EMPTY;
 		piece[from] = EMPTY;
 
-		/*
-		board[from] = board[to];
-		board[to] = 0;
-		pospiece[board[from]] = from;
-		*/
+		board[to] = board[from];
+		board[from] = 0;
+		pospiece[board[to]] = to;
 	}
 	if (m.bits & 4) {
 		if (side == LIGHT) {
 			color[m.to + 8] = xside;
 			piece[m.to + 8] = PAWN;
 
-			/*
 			board[m.to + 8] = hist_dat[hply].capture_board;
 			pospiece[board[m.to + 8]] = m.to + 8;
-			*/
-			
+
 		}
 		else {
 			color[m.to - 8] = xside;
 			piece[m.to - 8] = PAWN;
 
-			/*
 			board[m.to - 8] = hist_dat[hply].capture_board;
 			pospiece[board[m.to - 8]] = m.to - 8;
-			*/
 		}
 	}
 }
