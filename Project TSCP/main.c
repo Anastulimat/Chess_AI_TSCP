@@ -49,6 +49,7 @@ int main()
 	printf("\n");
 	init_hash();
 	init_board();
+	initAttackTables();
 	open_book();
 	gen();
 	computer_side = EMPTY;

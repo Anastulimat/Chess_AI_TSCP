@@ -54,6 +54,11 @@ int checkBoard()
 }
 
 
+void initAttackTables()
+{
+	memset(canAttack, 0, sizeof(canAttack));
+}
+
 void sync_board()
 {
 	int index_white = 2;
@@ -192,10 +197,7 @@ BOOL in_check(int s)
 	{
 		return attack(pospiece[1], s ^ 1); // s^1 veut dire que le côté noir attaque le roi blanc
 	}
-	else
-	{
-		return attack(pospiece[17], s ^ 1);
-	}
+	return attack(pospiece[17], s ^ 1);
 
 	/*
 	int i;
@@ -281,21 +283,10 @@ void gen()
 
 	/* so far, we have no moves for the current ply */
 	first_move[ply + 1] = first_move[ply];
-
-	int indexColor = 1;
-	if (side == DARK)
-		indexColor = 17;
-
-	int index;
-
 	
 
-	for (index = indexColor; index < indexColor + 16; ++index)
+	for (i = 0; i < 64; ++i)
 	{
-		i = pospiece[index]; // position de la piece
-
-		if (i == PIECE_DEAD) continue;
-
 		if (color[i] == side) {
 			if (piece[i] == PAWN) {
 				if (side == LIGHT) {
@@ -385,20 +376,9 @@ void gen_caps()
 	first_move[ply + 1] = first_move[ply];
 
 
-	int indexColor = 1;
-	if (side == DARK)
-		indexColor = 17;
-
-	int index;
-
-
-
-	for (index = indexColor; index < indexColor + 16; ++index)
+	for (i = 0; i < 64; ++i)
 	{
-		i = pospiece[index]; // position de la piece
-
-		if (i == PIECE_DEAD) continue;
-
+		
 		if (color[i] == side) {
 			if (piece[i] == PAWN) {
 				if (side == LIGHT) {
@@ -692,35 +672,36 @@ void takeback()
 		int from, to;
 
 		switch (m.to) {
-		case 62:
-			from = F1;
-			to = H1;
-			break;
-		case 58:
-			from = D1;
-			to = A1;
-			break;
-		case 6:
-			from = F8;
-			to = H8;
-			break;
-		case 2:
-			from = D8;
-			to = A8;
-			break;
-		default:  /* shouldn't get here */
-			from = -1;
-			to = -1;
-			break;
+			case 62:
+				from = F1;
+				to = H1;
+				break;
+			case 58:
+				from = D1;
+				to = A1;
+				break;
+			case 6:
+				from = F8;
+				to = H8;
+				break;
+			case 2:
+				from = D8;
+				to = A8;
+				break;
+			default:  /* shouldn't get here */
+				from = -1;
+				to = -1;
+				break;
 		}
 		color[to] = side;
 		piece[to] = ROOK;
 		color[from] = EMPTY;
 		piece[from] = EMPTY;
 
-		board[to] = board[from];
-		board[from] = 0;
-		pospiece[board[to]] = to;
+
+		board[from] = board[to];
+		board[to] = 0;
+		pospiece[board[from]] = from;
 	}
 	if (m.bits & 4) {
 		if (side == LIGHT) {
