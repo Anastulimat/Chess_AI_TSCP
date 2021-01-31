@@ -57,6 +57,31 @@ int checkBoard()
 void initAttackTables()
 {
 	memset(canAttack, 0, sizeof(canAttack));
+
+	int piece_type, src_square, offset_index, n;
+
+	for (piece_type = 1; piece_type < 6; piece_type++)
+	{
+		for (src_square = 0; src_square < 64; src_square++)
+		{
+			for (offset_index = 0; offset_index < offsets[piece_type]; offset_index++)
+			{
+				for (n = src_square;;) {
+					n = mailbox[mailbox64[n] + offset[piece[src_square]][offset_index]];
+					if (n == -1)
+						break;
+					if (color[n] != EMPTY) { // Destination non vide donc capture
+						if (color[n] == xside)
+							canAttack[piece_type][src_square][n] = 1;
+						break;
+					}
+					canAttack[piece_type][src_square][n] = 1;
+					if (!slide[piece[src_square]])
+						break;
+				}
+			}
+		}
+	}
 }
 
 void sync_board()
@@ -249,7 +274,8 @@ BOOL attack(int sq, int s)
 						return TRUE;
 				}
 			}
-			else
+			else if (canAttack[piece[i]][i][sq])
+			{
 				for (j = 0; j < offsets[piece[i]]; ++j)
 					for (n = i;;) {
 						n = mailbox[mailbox64[n] + offset[piece[i]][j]];
@@ -262,6 +288,7 @@ BOOL attack(int sq, int s)
 						if (!slide[piece[i]])
 							break;
 					}
+			}
 					
 		}
 
