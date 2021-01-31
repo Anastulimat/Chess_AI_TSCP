@@ -260,6 +260,7 @@ BOOL attack(int sq, int s)
 						if (!slide[piece[i]])
 							break;
 					}
+					
 		}
 
 	}
@@ -281,7 +282,20 @@ void gen()
 	/* so far, we have no moves for the current ply */
 	first_move[ply + 1] = first_move[ply];
 
-	for (i = 0; i < 64; ++i)
+	int indexColor = 1;
+	if (side == DARK)
+		indexColor = 17;
+
+	int index;
+
+	
+
+	for (index = indexColor; index < indexColor + 16; ++index)
+	{
+		i = pospiece[index]; // position de la piece
+
+		if (i == PIECE_DEAD) continue;
+
 		if (color[i] == side) {
 			if (piece[i] == PAWN) {
 				if (side == LIGHT) {
@@ -326,6 +340,7 @@ void gen()
 							break;
 					}
 		}
+	}
 
 	/* generate castle moves */
 	if (side == LIGHT) {
@@ -368,7 +383,22 @@ void gen_caps()
 	int i, j, n;
 
 	first_move[ply + 1] = first_move[ply];
-	for (i = 0; i < 64; ++i)
+
+
+	int indexColor = 1;
+	if (side == DARK)
+		indexColor = 17;
+
+	int index;
+
+
+
+	for (index = indexColor; index < indexColor + 16; ++index)
+	{
+		i = pospiece[index]; // position de la piece
+
+		if (i == PIECE_DEAD) continue;
+
 		if (color[i] == side) {
 			if (piece[i] == PAWN) {
 				if (side == LIGHT) {
@@ -403,6 +433,8 @@ void gen_caps()
 							break;
 					}
 		}
+	}
+
 	if (ep != -1) {
 		if (side == LIGHT) {
 			if (COL(ep) != 0 && color[ep + 7] == LIGHT && piece[ep + 7] == PAWN)
